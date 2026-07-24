@@ -1,0 +1,54 @@
+from collections import deque
+
+goal = (1, 2, 3,
+        4, 5, 6,
+        7, 8, 0)
+
+moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+def get_next(state):
+    pos = state.index(0)
+    x, y = divmod(pos, 3)
+    next_states = []
+
+    for dx, dy in moves:
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < 3 and 0 <= ny < 3:
+            new = list(state)
+            new_pos = nx * 3 + ny
+            new[pos], new[new_pos] = new[new_pos], new[pos]
+            next_states.append(tuple(new))
+
+    return next_states
+
+def solve(start):
+    q = deque([(start, [])])
+    visited = {start}
+
+    while q:
+        state, path = q.popleft()
+
+        if state == goal:
+            return path + [state]
+
+        for next_state in get_next(state):
+            if next_state not in visited:
+                visited.add(next_state)
+                q.append((next_state, path + [state]))
+
+    return None
+
+# Input
+print("Enter the initial state (use 0 for blank):")
+start = tuple(map(int, input().split()))
+
+solution = solve(start)
+
+if solution:
+    print("\nSolution Found!\n")
+    for step in solution:
+        for i in range(0, 9, 3):
+            print(step[i:i+3])
+        print()
+else:
+    print("No solution exists.")
